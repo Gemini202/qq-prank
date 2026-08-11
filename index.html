@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ====== OG 标签：QQ 聊天卡片显示的内容 ====== -->
+    <meta property="og:title" content="申请成为你的情侣">
+    <meta property="og:description" content="对方已向你发送情侣关系申请 💌">
+    <!-- 图片：部署后把下面这行 YOUR_USERNAME 和 YOUR_REPO 替换成你自己的 -->
+    <meta property="og:image" content="https://YOUR_USERNAME.github.io/YOUR_REPO/heart.svg">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="QQ">
+
+    <!-- QQ 额外会用到的标签 -->
+    <meta itemprop="name" content="申请成为你的情侣">
+    <meta itemprop="description" content="对方已向你发送情侣关系申请 💌">
+
+    <title>情侣关系申请</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+        }
+
+        /* 跳动的心形 */
+        .heart-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .heart {
+            font-size: 80px;
+            animation: heartbeat 0.8s ease-in-out infinite;
+            filter: drop-shadow(0 8px 24px rgba(244, 67, 54, 0.35));
+            user-select: none;
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.25); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.25); }
+            56% { transform: scale(1); }
+        }
+
+        /* 加载文字 */
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #d32f2f;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #e57373;
+            margin-bottom: 30px;
+        }
+
+        /* 三个加载点 */
+        .dots {
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef9a9a;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-16px); opacity: 1; }
+        }
+
+        /* 底部提示 */
+        .footer {
+            position: fixed;
+            bottom: 30px;
+            font-size: 12px;
+            color: #f48fb1;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="heart-container">
+        <div class="heart">❤️</div>
+    </div>
+    <div class="title" id="mainTitle">正在加载情侣关系…</div>
+    <div class="subtitle" id="mainSubtitle">请稍候</div>
+    <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    <div class="footer">💕 QQ 情侣空间</div>
+
+    <script>
+        (function () {
+            // ==================== 配置 ====================
+            // 从 URL 参数读取配置，没有则用默认值
+
+            const params = new URLSearchParams(window.location.search);
+
+            // 申请者昵称
+            const name = params.get('name') || '';
+
+            // 被申请者昵称（用于标题）
+            const to = params.get('to') || '';
+
+            // 标题 & 描述
+            const customTitle = params.get('title') || '';
+            const customDesc = params.get('desc') || '';
+
+            // 跳转链接（优先级最高）
+            const customUrl = params.get('url') || '';
+
+            // 游戏包名 → 自动拼成应用宝链接
+            const gamePkg = params.get('game') || 'com.tencent.tmgp.sgame'; // 默认：王者荣耀
+
+            // ==================== 更新页面文字 ====================
+            const titleText = customTitle || (name ? `${name} 申请成为你的情侣` : '申请成为你的情侣');
+            const descText = customDesc || (to ? `已向 ${to} 发送情侣关系申请 💌` : '对方已向你发送情侣关系申请 💌');
+
+            document.getElementById('mainTitle').textContent = titleText;
+            document.getElementById('mainSubtitle').textContent = descText;
+            document.title = titleText;
+
+            // ==================== 跳转目标 ====================
+            const jumpUrl = customUrl || `https://a.app.qq.com/o/simple.jsp?pkgname=${encodeURIComponent(gamePkg)}`;
+
+            // ==================== 延迟跳转 ====================
+            // 给对方 2 秒看到"加载中"的假象，然后跳转到应用市场
+            const delay = parseInt(params.get('delay') || '2000', 10);
+            setTimeout(function () {
+                window.location.href = jumpUrl;
+            }, Math.max(500, delay));
+        })();
+    </script>
+</body>
+</html>
